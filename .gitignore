@@ -1,0 +1,35 @@
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables & secrets (CRITICAL)
+.env
+*.env
+backend/.env
+
+# Python cache & compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# Vector Stores & Large Database caches
+data/chromadb/
+backend/data/chromadb/
+
+# Temporary logs
+*.log

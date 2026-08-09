@@ -1,0 +1,34 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: insurance-rag-backend
+    working_dir: /app
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  streamlit:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: insurance-rag-streamlit
+    working_dir: /app
+    command: streamlit run streamlit_app.py --server.address=0.0.0.0 --server.port=8501
+    ports:
+      - "8501:8501"
+    env_file:
+      - ./backend/.env
+    environment:
+      - API_URL=http://backend:8000/chat
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - backend
+    restart: unless-stopped

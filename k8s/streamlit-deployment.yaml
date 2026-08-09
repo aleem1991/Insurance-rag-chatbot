@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streamlit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: streamlit
+  template:
+    metadata:
+      labels:
+        app: streamlit
+    spec:
+      containers:
+      - name: streamlit
+        image: 547485782566.dkr.ecr.eu-north-1.amazonaws.com/insurance-rag-streamlit:latest
+        imagePullPolicy: Always
+
+        command:
+        - streamlit
+        - run
+        - streamlit_app.py
+        - --server.address=0.0.0.0
+        - --server.port=8501
+
+        ports:
+        - containerPort: 8501
+
+        envFrom:
+        - secretRef:
+            name: insurance-rag-secret
+
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
