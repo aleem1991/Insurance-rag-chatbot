@@ -1,6 +1,27 @@
+import sys
 import os
+from pathlib import Path
 import requests
 import streamlit as st
+
+# Setup sys.path for cloud deployment
+backend_dir = Path(__file__).resolve().parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+root_dir = backend_dir.parent
+if str(root_dir) not in sys.path:
+    sys.path.insert(0, str(root_dir))
+
+# Read Streamlit Cloud secrets into os.environ
+try:
+    if "GROQ_API_KEY" in st.secrets:
+        os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+    if "GROQ_CHAT_MODEL" in st.secrets:
+        os.environ["GROQ_CHAT_MODEL"] = st.secrets["GROQ_CHAT_MODEL"]
+    if "EMBEDDING_MODEL_NAME" in st.secrets:
+        os.environ["EMBEDDING_MODEL_NAME"] = st.secrets["EMBEDDING_MODEL_NAME"]
+except Exception:
+    pass
 
 API_URL = os.getenv("API_URL", "http://localhost:8000/chat")
 

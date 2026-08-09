@@ -1,5 +1,7 @@
 import pickle
+from pathlib import Path
 
+from src.config import DATA_DIR
 from src.ingestion.embeddings import generate_embedding
 from src.ingestion.vector_store import load_collection
 from src.retrieval.reranker import CrossEncoderReranker
@@ -11,7 +13,13 @@ class HybridRetriever:
 
         self.collection = load_collection()
 
-        with open("data/indexes/bm25_index.pkl", "rb") as f:
+        bm25_path = DATA_DIR / "indexes" / "bm25_index.pkl"
+        if not bm25_path.exists():
+            bm25_path = Path("backend/data/indexes/bm25_index.pkl")
+        if not bm25_path.exists():
+            bm25_path = Path("data/indexes/bm25_index.pkl")
+
+        with open(bm25_path, "rb") as f:
             data = pickle.load(f)
 
         self.bm25 = data["index"]

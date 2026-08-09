@@ -145,8 +145,37 @@ def store_chunks(chunks):
 
 def load_collection():
     """
-    Load the persisted ChromaDB collection.
+    Load the persisted ChromaDB collection, auto-populating from processed chunks if missing/empty.
     """
+    from src.config import DATA_DIR
+
     client = get_chroma_client()
 
-    return client.get_collection(COLLECTION_NAME)
+    try:
+        collection = client.get_collection(COLLECTION_NAME)
+        if collection.count() > 0:
+            return collection
+    except Exception:
+        collection = client.create_collection(
+            name=COLLECTION_NAME,
+            metadata={"description": "Insurance Policy Knowledge Base"},
+        )
+
+    # Auto-populate from processed chunks if collection is empty
+    chunks_path = DATA_DIR / "processed" / "all_chunks.json"
+    if not chunks_path.exists():
+        chunks_path = Path("backend/data/processed/all_chunks.json")
+    if not chunks_path.exists():
+        chunks_path = Path("data/processed/all_chunks.json")
+
+    if chunks_path.exists():
+        try:
+            import json
+            with open(chunks_path, "r", encoding="utf-8") as f:
+                chunks = json.load(f)
+            print(f"Auto-populating ChromaDB from {chunks_path}...")
+            store_chunks(chunks)
+        except Exception as e:
+            print(f"Error auto-populating ChromaDB: {e}")
+
+    return collection

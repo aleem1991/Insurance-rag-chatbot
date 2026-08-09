@@ -1,6 +1,11 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+
+load_dotenv(BASE_DIR / ".env")
 load_dotenv()
 
 # Groq LLM Configuration
@@ -27,13 +32,8 @@ AWS_REGION = os.getenv("AWS_REGION")
 S3_BUCKET = os.getenv("S3_BUCKET")
 
 # ChromaDB
-CHROMA_DB_DIR = os.getenv(
-    "CHROMA_DB_DIR",
-    "./data/chromadb"
-)
+default_chroma = DATA_DIR / "chromadb"
+CHROMA_DB_DIR = os.getenv("CHROMA_DB_DIR", str(default_chroma))
 
 # Tenant
-TENANT_ID = os.getenv(
-    "TENANT_ID",
-    "star-health"
-)
+TENANT_ID = os.getenv("TENANT_ID", "star-health")
